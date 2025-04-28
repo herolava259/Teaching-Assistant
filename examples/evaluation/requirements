@@ -1,0 +1,14 @@
+datasets
+ragas
+llama_index == 0.12.33
+langchain-openai
+langchain-community
+langchain
+tabulate
+nemoguardrails
+trulens== 1.4.9
+numpy == 2.2.5
+trulens-eval==1.4.9
+trulens-apps-llamaindex==1.4.9
+trulens-apps-llamaindex==1.4.9
+trulens-providers-openai==1.4.9
