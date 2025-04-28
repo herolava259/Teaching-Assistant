@@ -12,3 +12,6 @@ trulens-eval==1.4.9
 trulens-apps-llamaindex==1.4.9
 trulens-apps-llamaindex==1.4.9
 trulens-providers-openai==1.4.9
+pandas==2.2.3
+duckdb==1.2.2
+pydantic==2.11.3
