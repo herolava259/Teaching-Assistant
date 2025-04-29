@@ -31,8 +31,11 @@ class ExampleAgent:
                 return response.choices[0].message.content
 
 
-    def run_with_tracing(self, user_msg: str) -> str:
-        self.messages.append({'role': 'user', 'content': user_msg})
+    def run_with_tracing(self, user_msg: str| List[dict]) -> List[dict]:
+        if isinstance(user_msg, str):
+            self.messages.append({'role': 'user', 'content': user_msg})
+        elif isinstance(user_msg, list):
+            self.messages.extend(user_msg)
         messages = self.messages
         while True:
 
@@ -60,7 +63,7 @@ class ExampleAgent:
                 else:
                     print("No tool calls, returning final response")
                     span.set_output(value=response.choices[0].message.content)
-                    return response.choices[0].message.content
+                    return self.messages + [{'role': 'Assistant', 'content': response.choices[0].message.content}]
 
 
 
