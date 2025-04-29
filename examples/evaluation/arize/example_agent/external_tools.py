@@ -1,9 +1,12 @@
 from typing import List
-from examples.evaluation.arize.example_agent.prompts import SQL_GENERATION_PROMPT, DATA_ANALYSIS_PROMPT, CHART_CONFIGURATION_PROMPT, CREATE_CHART_PROMPT
+from prompts import SQL_GENERATION_PROMPT, DATA_ANALYSIS_PROMPT, CHART_CONFIGURATION_PROMPT, CREATE_CHART_PROMPT
 import openai
 import pandas as pd
 import duckdb
-from examples.evaluation.arize.example_agent.struture_ouputs import VisualizationConfiguration
+from struture_ouputs import VisualizationConfiguration
+from setup_tracing import tracer
+
+
 
 def generate_sql_query(prompt: str, columns: List[str], table_name: str, openai_client: openai,
                        model_name: str = 'gpt-4o-mini') -> str:
@@ -21,7 +24,7 @@ def generate_sql_query(prompt: str, columns: List[str], table_name: str, openai_
 
     return response.choices[0].message.content
 
-
+@tracer.tool()
 def lookup_sales_data(prompt: str,  table_name:str, parquet_file: str,openai_client) -> str:
     """Implementation of sales data lookup from parquet file using SQL"""
     try:
@@ -41,6 +44,7 @@ def lookup_sales_data(prompt: str,  table_name:str, parquet_file: str,openai_cli
     except Exception as e:
         return f'Error accessing data: {str(e)}'
 
+@tracer.tool()
 def analyze_sales_data(prompt: str, data: str, openai_client: openai, model_name: str = 'gpt-4o-mini') -> str:
     """Implementation of AI-powered sales data analysis"""
 
@@ -55,6 +59,7 @@ def analyze_sales_data(prompt: str, data: str, openai_client: openai, model_name
 
     return analysis if analysis else "No analysis could be generated"
 
+@tracer.chain()
 def extract_chart_config(data: str, visualization_goal: str, openai_client: openai, model_name: str) -> dict:
     """Generate chart visualization configuration
 
@@ -94,7 +99,7 @@ def extract_chart_config(data: str, visualization_goal: str, openai_client: open
             "data": data
         }
 
-
+@tracer.chain()
 def create_chart(config: dict, openai_client: openai, model_name: str) -> str:
     """Create a chart based on the configuration"""
 
@@ -112,6 +117,7 @@ def create_chart(config: dict, openai_client: openai, model_name: str) -> str:
 
     return code
 
+@tracer.tool()
 def generate_visualization(data: str, visualization_goal: str, client, model_name) -> str:
     """Generate a visualization based on the data and goal"""
 
@@ -122,7 +128,7 @@ def generate_visualization(data: str, visualization_goal: str, client, model_nam
     return code
 
 
-tools = [
+tools_schema = [
     {
         "type": "function",
         "function": {

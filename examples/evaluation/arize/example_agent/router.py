@@ -1,9 +1,11 @@
-from examples.evaluation.arize.example_agent.tools import tools, tool_implementations
+from external_tools import tool_implementations
 import json
 from typing import List
+from examples.evaluation.arize.example_agent.setup_tracing import tracer
 
+parquet_file_path = '../data/Store_Sales_Price_Elasticity_Promotions_Data.parquet'
 
-parquet_file_path = 'data/Store_Sales_Price_Elasticity_Promotions_Data.parquet'
+@tracer.chain()
 def handle_tool_calls(tool_calls, messages: List[dict], client, model_name):
 
     for tool_call in tool_calls:
