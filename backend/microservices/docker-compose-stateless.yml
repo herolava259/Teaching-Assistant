@@ -1,0 +1,15 @@
+conversationapi:
+    container_name: conversationapi
+    restart: alaways
+    build:
+      context: .
+      dockerfile: "conversation/Dockerfile"
+    depends_on:
+      documentdb:
+        condition: service_started
+      redis-cache:
+        condition: service_healthy
+      applicationdb:
+        condition: service_started
+    ports:
+      - "8080:8080"
