@@ -1,0 +1,17 @@
+{
+  "database_connections":
+  {
+    "postgresql":
+    {
+      "default": ""
+    },
+    "mongodb":
+    {
+      "default": ""
+    }
+  },
+  "redis_cache":
+  {
+    "connections": []
+  }
+}

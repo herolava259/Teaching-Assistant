@@ -11,3 +11,4 @@ pymongo==4.12.1
 asyncpg==0.30.0
 sqlalchemy==2.0.40
 databases
+unicode==2.9

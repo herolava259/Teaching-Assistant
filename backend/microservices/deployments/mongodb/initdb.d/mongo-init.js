@@ -1,14 +1,15 @@
+db = db.getSiblingDB("conversation_db");
 
-db = db.getSiblingDB('conversation');
+console.log("Creating database conversationdb...");
+
 
 db.createUser({
-    user: "json_fay",
+    user: "conversation_user",
     pwd: "1qaz2wsx3edc$",
     roles:[
         {
-            role: 'readWrite',
-            db: 'conversation'
-
+            role: "readWrite",
+            db: "conversation_db"
         },
     ],
 });
@@ -16,7 +17,7 @@ db.createUser({
 db.createCollection('conversation_chunk_collection');
 
 
-db.conversation_chunk_collection.insertMany({
+db.conversation_chunk_collection.insertOne({
     id: 'f524286b-a8a7-4c6a-90c7-3ede64af21db',
     conversationId: 'cbca95c4-0f16-4e02-8190-7689ec9e5c0e',
     noOfChunks: 0,
@@ -50,3 +51,5 @@ db.conversation_chunk_collection.insertMany({
         }
     ]
 });
+
+console.log("Database conversationdb created successfully.");

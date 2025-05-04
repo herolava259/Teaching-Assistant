@@ -1,45 +1,46 @@
 
 services:
-  documentdb:
-    image: mongodb:7.0
+  mongodb:
+    image: mongo:7.0
     restart: always
-    container_name: documentdb
+    container_name: mongodb
     hostname: mongodb
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
+      - ./deployments/mongodb/initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodb-data:/data/db
-      - ./mongo-initializer.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodb-log:/var/log/mongodb/
     env_file:
       - ./deployments/mongodb/.env
     environment:
       # - PUID=1000
       # - PGID=1000
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
     networks:
     - mongodb_network
   
   mongo-express:
-    image: mongo-express:latest
+    image: mongo-express:1.0.2-18-alpine3.19
     container_name: mongo-express
-    restart: always
+    restart: no
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      ME_GONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_MONGODB_SERVER: 'mongodb'
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017
     env_file:
       - ./deployments/mongodb/.env
     ports:
-      - "8081:8081"
+      - 8081:8081
     networks:
       - mongodb_network
     depends_on:
-      - documentdb
+      - mongodb
 
     #command: --auth --bind_ip_all
   redis-cache:
@@ -65,9 +66,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgresql:/var/lib/postgresql/data/
     env_file:
@@ -82,15 +83,15 @@ services:
     ports:
       - "5050:80"
     environment:
-      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL: ghostfree@email.com
+      PGADMIN_DEFAULT_PASSWORD: 1QAZ2wsx3EDC$
     volumes:
       - pgadmin_data:/root/.pgadmin
     networks:
       - postgresql_network
     depends_on:
       - applicationdb
-  
+    
 
 networks:
   mongodb_network:
