@@ -3,15 +3,28 @@
   {
     "postgresql":
     {
-      "default": ""
+      "dev": "postgresql+psycopg2://ghostofrace:1QAZ2wsx3EDC$@localhost/teachingassistantdb",
+      "default": "postgresql+psycopg2://ghostofrace:1QAZ2wsx3EDC$@localhost/teachingassistantdb"
     },
     "mongodb":
     {
-      "default": ""
+      "dev": "mongodb://root:rootpassword@localhost:27017/?authSource=admin",
+      "default": "mongodb://root:rootpassword@localhost:27017/?authSource=admin"
     }
   },
   "redis_cache":
   {
-    "connections": []
+    "connections":
+    {
+      "dev": "redis://:1QAZ2wsx3EDC@localhost:6379",
+      "default": "redis://:1QAZ2wsx3EDC@localhost:6379"
+    }
+  },
+  "rabbit-mq":
+  {
+    "connections":
+    {
+      "default": ""
+    }
   }
 }

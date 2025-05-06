@@ -10,5 +10,6 @@ uvicorn==0.34.2
 pymongo==4.12.1
 asyncpg==0.30.0
 sqlalchemy==2.0.40
-databases
+databases==0.9.0
 unicode==2.9
+sqlmodel==0.0.24

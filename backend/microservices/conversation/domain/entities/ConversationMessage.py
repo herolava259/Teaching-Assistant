@@ -3,8 +3,8 @@ from datetime import date
 from uuid import UUID, uuid4
 from domain.value_objects.Feedback import Feedback
 from typing import Optional, List
-from DocumentMetadata import DocumentMetadata
-
+from LinkedDocumentMetadata import LinkedDocumentMetadata
+from BaseEntity import State
 
 
 @dataclass(order=True)
@@ -17,9 +17,9 @@ class ConversationMessage:
     created_at: date
     updated_at: date
     feedback: Optional[Feedback]
-    deleted: bool = field(default = False)
+    state: State = field(default = State.Added)
     no_of_msg: int = field(default_factory=int, compare=True)
-    documents: List[DocumentMetadata] = field(default_factory= list)
+    documents: List[LinkedDocumentMetadata] = field(default_factory= list)
     id: UUID = field(default_factory=uuid4)
 
     @property

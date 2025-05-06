@@ -1,7 +1,7 @@
 services:
   redis-cache:
     image: redis:7.4.3
-    container_name: redis-cache
+    container_name: rediscache
     restart: always
     ports:
       - "6379:6379"
@@ -12,10 +12,34 @@ services:
       interval: 1s
       timeout: 3s
       retries: 5
-    command: ["redis-server"]
+    env_file:
+      - .env
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    networks:
+      - redis_network
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    restart: no
+    ports:
+      - "8001:8001"
+    volumes:
+      - redisinsight_data:/data
+    networks:
+      - redis_network
+    depends_on:
+      - redis-cache
 
+
+networks:
+  redis_network:
+    driver: bridge
+    name: redis_network
 
 volumes:
   redis:
+    driver: local
+    external: false
+  redisinsight_data:
     driver: local
     external: false
