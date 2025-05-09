@@ -12,7 +12,7 @@ class ConversationMessage:
     conversation_id: UUID
     chunk_id: UUID
     attendee_id: UUID
-    reference_msg_id: UUID
+    reference_msg_id: Optional[UUID]
     content: str
     created_at: date
     updated_at: date

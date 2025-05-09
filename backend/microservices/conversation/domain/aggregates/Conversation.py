@@ -77,7 +77,8 @@ class Conversation:
         new_attendee: Attendee = Attendee(user_id=user_id,
                                           conversation_id=self.id,
                                           created_date= datetime.datetime.now(),
-                                          updated_date= datetime.datetime.now())
+                                          updated_date= datetime.datetime.now(),
+                                          nickname='')
 
         self.attendees.append(new_attendee)
 

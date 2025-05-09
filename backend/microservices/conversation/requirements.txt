@@ -13,3 +13,5 @@ sqlalchemy==2.0.40
 databases==0.9.0
 unicode==2.9
 sqlmodel==0.0.24
+pymongoarrow==1.7.2
+mongoengine==0.29.1
