@@ -7,11 +7,15 @@ from uuid import UUID, uuid4
 from ..entities.Attendee import Attendee
 from ..entities.MessageChunk import MessageChunk
 from ..entities.BaseEntity import State
+from ..entities.Invitation import Invitation
+
+
 @dataclass
 class Conversation:
     created_at: date
     updated_at: date
     created_user_id: UUID
+    limit_invitation: int = field(default=10)
     deleted: bool = field(default=False)
     state: State = field(default=State.Added)
     title: str = field(default="Conversation")
@@ -54,7 +58,7 @@ class Conversation:
         return len(self.attendees)
     @property
     def is_full(self) -> bool:
-        return self.num_of_attendee > 20
+        return self.num_of_attendee > self.limit_invitation
 
     def user_in_conversation(self, user_id) -> bool:
         return any(a.user_id == user_id for a in self.attendees)
@@ -66,23 +70,17 @@ class Conversation:
             return None
         return exist_obj[0]
 
-    def invite(self, user_id: UUID) -> Optional[Attendee]:
+    def check_invitation(self, invitation: Invitation) -> bool:
         if self.is_full:
-            return None
-        exist_attendee: Optional[Attendee] = self.find_attendee(user_id)
+            return False
 
-        if exist_attendee:
-          return exist_attendee
+        if self.created_user_id != invitation.inviter_id:
+            return False
 
-        new_attendee: Attendee = Attendee(user_id=user_id,
-                                          conversation_id=self.id,
-                                          created_date= datetime.datetime.now(),
-                                          updated_date= datetime.datetime.now(),
-                                          nickname='')
+        if any(c.user_id == invitation.invitee_id for c in self.attendees):
+            return False
 
-        self.attendees.append(new_attendee)
-
-        return new_attendee
+        return True
 
 
 
