@@ -5,6 +5,8 @@ from domain.aggregates.Conversation import Conversation
 
 class IConversationRepository(ABC):
 
+
+
     @abstractmethod
     async def get_by_id(self, ids: UUID) -> Optional[Conversation]:
         pass

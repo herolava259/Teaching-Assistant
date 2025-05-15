@@ -1,4 +1,3 @@
-from uuid import UUID
 from pydantic import BaseModel
 from uuid import UUID
 from typing import List, Optional
@@ -8,9 +7,6 @@ class DeleteType(IntEnum):
     SoftDel = 1
     HardDel = 2
     PeriodicDel = 3
-
-
-from domain.aggregates.Conversation import Conversation
 
 
 class ConversationCreateCommand(BaseModel):
