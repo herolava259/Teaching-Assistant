@@ -16,3 +16,4 @@ sqlmodel==0.0.24
 pymongoarrow==1.7.2
 mongoengine==0.29.1
 redis==6.1.0
+alembic==1.15.2

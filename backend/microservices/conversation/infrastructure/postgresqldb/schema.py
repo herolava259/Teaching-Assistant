@@ -110,7 +110,10 @@ class InvitationRecord(Base):
         CheckConstraint('status <= 3', name='upper_status_constraint')
     )
 
+from sqlalchemy.inspection import inspect
 
+def object_to_dict(obj):
+    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
 
 
 
