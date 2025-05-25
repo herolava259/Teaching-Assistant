@@ -29,3 +29,13 @@ Specifically, I'm looking at:
 Thanks!
 Alice""",
 }
+
+email_template = """Email Subject: {subject}
+Email From: {from_email}
+Email To: {to_email}
+Email Content:
+```
+{content}
+```
+> Triage Result: {result}
+"""
