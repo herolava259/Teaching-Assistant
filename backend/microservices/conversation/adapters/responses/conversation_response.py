@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from datetime import date
 from enum import IntEnum
 from typing import Optional
+from domain.aggregates.Conversation import Conversation
 
 class ResponseStatus(IntEnum):
     Success = 0
@@ -16,11 +17,11 @@ class ResponseMode(IntEnum):
     Development = 2
 
 class ConversationBaseResponse(BaseModel):
-    entity_id: UUID = Field(..., description="id correspond with conversation entity")
-    response_created_time: date
+    entity_id: Optional[UUID] = Field(description="id correspond with conversation entity", default=None)
+    response_created_time: date = Field(default_factory=datetime.datetime.now)
     status: ResponseStatus = Field(default=ResponseStatus.Success)
-    description: Optional[str] = Field(...)
-    mode: Optional[ResponseMode] = Field(...)
+    description: Optional[str] = Field(default='')
+    mode: Optional[ResponseMode] = Field(default=ResponseMode.Debug)
 
     @staticmethod
     def create_default(entity_id: UUID | None = None):
@@ -33,6 +34,28 @@ class ConversationBaseResponse(BaseModel):
 
         return response
 
-class ConversationQueryByIdResponse(ConversationBaseResponse):
-    pass
+class ConversationEntityResponse(ConversationBaseResponse):
+    entity: Conversation
+
+class ConversationSignalResponse(ConversationBaseResponse):
+    signal: bool = Field(...)
+
+    @staticmethod
+    def return_failure(entity_id: UUID | None = None, description: str = 'Failure or False signal', status: ResponseStatus = ResponseStatus.Success,
+                       mode: ResponseMode = ResponseMode.Debug):
+        return ConversationSignalResponse(entity_id=entity_id,
+                                          status=status,
+                                          description=description,
+                                          signal=False,
+                                          mode = mode)
+
+    @staticmethod
+    def return_success(entity_id: UUID | None = None, description: str = 'Successful or True signal', status: ResponseStatus = ResponseStatus.Success,
+                       mode: ResponseMode = ResponseMode.Debug):
+        return ConversationSignalResponse(entity_id=entity_id,
+                                          status=status,
+                                          description=description,
+                                          signal=True,
+                                          mode = mode)
+    
 
