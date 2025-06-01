@@ -43,7 +43,7 @@ class ConversationServiceContainer:
 
     def get_implementation_of_service(self, generic_service_type: type):
         if self.service_container.get(generic_service_type, None) is None:
-            raise RuntimeError(f"The service {generic_service_type.__name__} is not register")
+            raise RuntimeError(f"The service {generic_service_type.__name__} is not registered")
         return self.service_container[generic_service_type].implement_service()
 
 
@@ -51,7 +51,7 @@ class ConversationServiceRegistry:
     def __init__(self):
         self._container: Dict[type, ServiceRegistration] = dict()
 
-    def register_service(self, instance_type: type, generic_type: type, factory_fn: Callable[[ConversationServiceContainer], Any]) -> Self:
+    def register_service(self, instance_type: type, generic_type: type, factory_fn: Callable[[ConversationServiceContainer], Any] | None = None) -> Self:
         self._container[generic_type] = ServiceRegistration(service_type=instance_type, init_factory=factory_fn)
 
     def build_container(self) -> ConversationServiceContainer:

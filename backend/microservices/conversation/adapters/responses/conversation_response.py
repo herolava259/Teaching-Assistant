@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 from datetime import date
 from enum import IntEnum
-from typing import Optional
+from typing import Optional, List
 from domain.aggregates.Conversation import Conversation
 
 class ResponseStatus(IntEnum):
@@ -57,5 +57,12 @@ class ConversationSignalResponse(ConversationBaseResponse):
                                           description=description,
                                           signal=True,
                                           mode = mode)
-    
+
+
+class ConversationPaginationResponse(ConversationBaseResponse):
+    current_page: int = Field(...)
+    total_page: int = Field(...)
+    total_count: int = Field(...)
+    data: List[Conversation] = Field(default_factory=list)
+
 
