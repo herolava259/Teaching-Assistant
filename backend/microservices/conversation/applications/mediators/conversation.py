@@ -16,3 +16,7 @@ class ConversationMediator:
         if not self.handler_mapper.get(req_type, None):
             raise RuntimeError(f'Cannot implement or register handler of request type {req_type}')
         return await self.handler_mapper[req_type].handle(request)
+
+    async def send(self, request: ConversationBaseRequest) -> ConversationBaseResponse:
+
+        return await self.__execute__(request)

@@ -26,3 +26,9 @@ class ConversationMapper:
                             title=record.title,
                             counter_chunk=record.counter_chunk,
                             id=record.id)
+
+
+conversation_mapping_fields = {"id": "id", 'title': "title", "counter_chunk": "counter_chunk", "created_date": "created_at",
+                  "updated_date": "updated_at", "created_user_id": "created_user_id",
+                  "limit_invitation": "limit_invitation",
+                  "deleted": "deleted"}

@@ -5,7 +5,7 @@ from domain.aggregates.Conversation import Conversation
 from domain.entities.BaseEntity import State
 from interfaces.repositories.conversation_repository import IConversationRepository
 from utils.configuration import Configuration
-from ..mappers.conversation import ConversationMapper
+from ..mappers.conversation import ConversationMapper, conversation_mapping_fields
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -44,8 +44,8 @@ class ConversationRepository(IConversationRepository):
     @staticmethod
     async def __exist_entity(idx: UUID) -> bool:
         with ConversationRepository.__init_session() as session:
-            stmt = session.query(exists().where(idx == ConversationRecord.id)).scalar()
-            return stmt
+            existed = session.query(exists().where(idx == ConversationRecord.id)).scalar()
+            return existed
 
     async def modify(self, cons: Conversation) -> bool:
         state = cons.state
@@ -64,7 +64,32 @@ class ConversationRepository(IConversationRepository):
 
 
     async def safety_update(self, cons: Conversation, params: List[str] | None) -> bool:
-        pass
+
+        exclude_fields = {'id'}
+        include_fields = {"updated_date"}
+        updated_fields = set(params) & include_fields - exclude_fields
+        if updated_fields.difference(set(cons.__dict__.keys())):
+            raise RuntimeError("Argument 'params' have invalid field. Some param name in params are not fields in Conversation entity")
+
+        inverse_mapping_fields = {val: key for key, val in conversation_mapping_fields.items()}
+        field_values = cons.__dict__
+        modify_value_mapping: Dict[str, Any] = {inverse_mapping_fields[field]: field_values[field] for field in updated_fields}
+
+        ids = cons.id
+        result = False
+        session = ConversationRepository.__init_session()
+        try:
+            stmt = (update(ConversationRecord)
+                    .where(ConversationRecord.id == ids)
+                    .values(**modify_value_mapping))
+            result = session.execute(stmt)
+            session.commit()
+        except Exception as ex:
+            print(f"Error while execute safety_update from database side. Ex = {ex}")
+            session.rollback()
+        finally:
+            session.close()
+        return result == 1
 
     async def update(self, obj: Union[Conversation, Dict[str, Any]]) -> bool:
         if (isinstance(obj, Conversation)
@@ -104,7 +129,11 @@ class ConversationRepository(IConversationRepository):
 
 
     async def total_conversation_of(self, user_id: UUID) -> int:
-        pass
+        total_record = 0
+        from sqlalchemy import func
+        with ConversationRepository.__init_session() as session:
+            total_record = session.query(func.count(ConversationRecord.id)).filter(ConversationRecord.created_user_id == user_id).scalar()
+        return total_record
 
     async def get(self, **filters: Any) -> Optional[Conversation]:
         with ConversationRepository.__init_session() as session:

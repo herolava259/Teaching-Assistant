@@ -9,7 +9,24 @@ router = APIRouter(
 )
 
 
-@router.get("{conversation_id}",
-            status_code=status.HTTP_204_NO_CONTENT)
+from ..dependencies.conversation import create_mediator
+from adapters.queries.conversation import ConversationGetByIdQuery
+from adapters.responses.conversation_response import ConversationEntityResponse
+conversation_mediator = create_mediator()
+
+@router.get("conversation_single_get/{conversation_id}",
+            status_code=status.HTTP_204_NO_CONTENT,
+            response_model=ConversationEntityResponse)
 async def get_conversation_by_id(conversation_id: UUID):
+    query = ConversationGetByIdQuery(conversation_id=conversation_id)
+
+    response = await conversation_mediator.send(query)
+
+    return response
+
+@router.post("conversation_create/")
+async def create_conversation():
     pass
+
+
+
