@@ -62,7 +62,8 @@ class ConversationSignalResponse(ConversationBaseResponse):
 class ConversationPaginationResponse(ConversationBaseResponse):
     current_page: int = Field(...)
     total_page: int = Field(...)
-    total_count: int = Field(...)
+    total_record: int = Field(...)
+    page_size: int = Field(ge=0, lt=100, default=10)
     data: List[Conversation] = Field(default_factory=list)
 
 
