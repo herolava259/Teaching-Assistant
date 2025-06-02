@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from uuid import UUID
 from domain.aggregates.Conversation import Conversation
 
+from domain.aggregates.Pagination import PaginationParams, PaginationDataCollection
+
 class IConversationRepository(ABC):
 
     @abstractmethod
@@ -36,6 +38,11 @@ class IConversationRepository(ABC):
     @abstractmethod
     async def remove(self, obj: Union[UUID, Conversation]) -> bool:
         pass
+
+    @abstractmethod
+    async def pagination_query(self, pagination_params: PaginationParams[Conversation]) -> PaginationDataCollection[Conversation]:
+        pass
+
 
 
 class ICachedConversationRepository(IConversationRepository, ABC):

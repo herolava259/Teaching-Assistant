@@ -2,6 +2,7 @@ import datetime
 from typing import Optional, Any, List, Union, Dict
 from sqlalchemy.dialects.postgresql import UUID
 from domain.aggregates.Conversation import Conversation
+from domain.aggregates.Pagination import PaginationParams, PaginationDataCollection
 from domain.entities.BaseEntity import State
 from interfaces.repositories.conversation_repository import IConversationRepository
 from utils.configuration import Configuration
@@ -16,6 +17,10 @@ import uuid
 
 
 class ConversationRepository(IConversationRepository):
+
+    async def pagination_query(self, pagination_params: PaginationParams[Conversation]) -> PaginationDataCollection[
+        Conversation]:
+        pass
 
     @staticmethod
     def __init_session():

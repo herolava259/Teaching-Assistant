@@ -29,7 +29,11 @@ class ConversationGetByIdQueryHandler(AbstractConversationHandler[ConversationGe
 
 class ConversationPaginationQueryHandler(AbstractConversationHandler[ConversationPaginationQuery,ConversationPaginationResponse]):
     async def handle(self, request: ConversationPaginationQuery) -> ConversationPaginationResponse:
-        pass
+        return await self.repo
+
+    def __init__(self, repo: IConversationRepository):
+        self.repo = repo
+
 
 
 class ConversationAddCommandHandler(AbstractConversationHandler):
