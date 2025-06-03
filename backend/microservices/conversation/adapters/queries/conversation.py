@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Annotated, Literal
 from uuid import UUID
 from datetime import date
-from paginations import PaginationParams
+from paginations import PaginationParamsModel
 
 class ConversationGetByIdQuery(BaseModel):
     conversation_id: UUID = Field(...)
@@ -22,7 +22,7 @@ class TimeInterval(BaseModel):
     since_date: Optional[date] = Field(...)
     until_date: Optional[date] = Field(...)
 
-class ConversationPaginationQuery(PaginationParams):
+class ConversationPaginationQuery(PaginationParamsModel):
 
     title: Optional[str] = Field(default='')
     title_rule: Literal['contain', 'begin-with', 'end-with'] = Field(default='contain')

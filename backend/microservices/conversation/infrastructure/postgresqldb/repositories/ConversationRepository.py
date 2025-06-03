@@ -18,10 +18,6 @@ import uuid
 
 class ConversationRepository(IConversationRepository):
 
-    async def pagination_query(self, pagination_params: PaginationParams[Conversation]) -> PaginationDataCollection[
-        Conversation]:
-        pass
-
     @staticmethod
     def __init_session():
         conn_string = Configuration.load('database_connections:postgresql:default')
@@ -66,8 +62,9 @@ class ConversationRepository(IConversationRepository):
             return (await self.add(cons)) is not None
 
         return False
-
-
+    async def pagination_query(self, pagination_params: PaginationParams[Conversation]) -> PaginationDataCollection[
+        Conversation]:
+        pass
     async def safety_update(self, cons: Conversation, params: List[str] | None) -> bool:
 
         exclude_fields = {'id'}

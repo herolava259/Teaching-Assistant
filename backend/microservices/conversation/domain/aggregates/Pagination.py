@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
-from typing import TypeVar, Generic, List, Any
-
+from typing import TypeVar, Generic, List, Optional, Union, Set
+from datetime import date
 
 from enum import Enum
 
 TQueryEntity = TypeVar('TEntity')
-TFilterValue = TypeVar('TFilterValue')
+TFilterValue = TypeVar('TFilterValue', int, str, float, date)
 
 class OperationType(int, Enum):
     LessThan = 100_000_001
@@ -16,6 +16,10 @@ class OperationType(int, Enum):
     Like = 100_000_006
     Equal = 100_000_007
 
+class OrderType(int, Enum):
+    Ascending = 100_000_001
+    Descending = 100_000_002
+
 class FilterCondition(dataclass, Generic[TFilterValue]):
     operator: OperationType = field(default=OperationType.LessThan)
     value: TFilterValue = field(default=None)
@@ -23,6 +27,10 @@ class FilterCondition(dataclass, Generic[TFilterValue]):
 class FilterParam(dataclass, Generic[TFilterValue]):
     field_name: str = field(default='created_date')
     filter_conditions: List[FilterCondition[TFilterValue]] = field(default_factory=list)
+
+class OrderByClause(dataclass):
+    order_type: OrderType = field(default=OrderType.Ascending)
+    order_by_fields: Set[str] = field(default_factory=set)
 
 class PaginationDataCollection(dataclass, Generic[TQueryEntity]):
     page_num: int = field(default=0)
@@ -45,7 +53,9 @@ class PaginationParams(dataclass, Generic[TQueryEntity]):
 
     page_size: int = field(default=0)
     page_num: int = field(default=10)
-    filter_params: List[FilterParam[Any]] = field(default_factory=list)
+    filter_params: List[FilterParam[Union[str, int, float, date]]] = field(default_factory=list)
+    order_by_clauses: Optional[OrderByClause] = field(default=None)
+    distinct_by: Set[str] = field(default_factory=set)
 
     def example(self) -> TQueryEntity:
         pass

@@ -11,7 +11,7 @@ router = APIRouter(
 
 from ..dependencies.conversation import create_mediator
 from adapters.queries.conversation import ConversationGetByIdQuery
-from adapters.responses.conversation_response import ConversationEntityResponse
+from adapters.responses.conversation_response import ConversationEntityResponse, ConversationPaginationResponse
 conversation_mediator = create_mediator()
 
 @router.get("conversation_single_get/{conversation_id}",
@@ -23,6 +23,14 @@ async def get_conversation_by_id(conversation_id: UUID):
     response = await conversation_mediator.send(query)
 
     return response
+
+
+@router.post(path="conversation_pagination_query/{conversation_id}",
+             status_code=status.HTTP_302_FOUND,
+             response_model=ConversationPaginationResponse)
+async def pagination_query():
+    pass
+
 
 @router.post("conversation_create/")
 async def create_conversation():

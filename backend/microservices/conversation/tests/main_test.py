@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, FastAPI, Cookie, Header, HTTPException
+from fastapi import Depends, FastAPI, Cookie, Header, HTTPException, Path, Query
 
 async def verify_token(x_token: Annotated[str, Header()]):
     if x_token != "fake-super-secret-token":
@@ -80,3 +80,31 @@ def get_item(item_id: str, username: Annotated[str, Depends(get_username)]):
             status_code=404, detail="Item not found, there's only a plumbus here"
         )
     return item_id
+
+
+from pydantic import BaseModel
+
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+
+
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, item: Item, q: str | None = None):
+    result = {"item_id": item_id, **item.__dict__}
+    if q:
+        result.update({"q": q})
+    return result
+
+@app.get("/items4/{item_id}")
+async def read_items(
+    item_id: Annotated[int, Path(title="The ID of the item to get")],
+    q: Annotated[str | None, Query(alias="item-query")] = None,
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
