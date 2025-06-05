@@ -24,38 +24,24 @@ class OrderType(int, Enum):
     Ascending = 100_000_001
     Descending = 100_000_002
 
-class FilterCondition(dataclass, Generic[TFilterValue]):
+@dataclass
+class FilterCondition(Generic[TFilterValue]):
     operator: OperationType = field(default=OperationType.LessThan)
     value: TFilterValue = field(default=None)
 
-class FilterParam(dataclass, Generic[TFilterValue]):
+@dataclass
+class FilterParam(Generic[TFilterValue]):
     field_name: str = field(default='created_date')
     filter_conditions: List[FilterCondition[TFilterValue]] = field(default_factory=list)
     condition_between: ConditionBetweenType = field(default = ConditionBetweenType.And)
 
-class ConditionalFilterLeaf:
-    def __init__(self,filter_param: FilterParam):
-        self.filter_param = filter_param
-
-class ConditionalFilterNode:
-    def __init__(self, condition_between: ConditionBetweenType = ConditionBetweenType.And,
-                 left_node: Union[None, 'ConditionalFilterNode', ConditionalFilterLeaf] = None,
-                 right_node: Union[None, 'ConditionalFilterNode', ConditionalFilterLeaf] = None):
-        self.condition_between: ConditionBetweenType = condition_between
-        self.left_node = left_node
-        self.right_node = right_node
-
-
-
-class ConditionalFilterTree(dataclass, Generic[TQueryEntity]):
-    def __init__(self, root_node: ConditionalFilterNode):
-        self.root = root_node
-
-class OrderByClause(dataclass):
+@dataclass
+class OrderByClause:
     order_type: OrderType = field(default=OrderType.Ascending)
     order_by_fields: Set[str] = field(default_factory=set)
 
-class PaginationDataCollection(dataclass, Generic[TQueryEntity]):
+@dataclass
+class PaginationDataCollection(Generic[TQueryEntity]):
     page_num: int = field(default=0)
     page_size: int = field(default=10)
 
@@ -83,7 +69,8 @@ class PaginationDataCollection(dataclass, Generic[TQueryEntity]):
     def EmptyDataCollection(page_size: int = 10) -> Optional['PaginationDataCollection[TQueryEntity]']:
         return PaginationDataCollection(page_size=page_size)
 
-class PaginationParams(dataclass, Generic[TQueryEntity]):
+@dataclass
+class PaginationParams(Generic[TQueryEntity]):
 
     page_size: int = field(default=0)
     page_num: int = field(default=10)
@@ -93,3 +80,28 @@ class PaginationParams(dataclass, Generic[TQueryEntity]):
     def example(self) -> TQueryEntity:
         pass
 
+## Advanced pagination query
+TQueryData = TypeVar('TQueryData')
+
+class ConditionalFilterLeaf:
+    def __init__(self,filter_param: FilterParam):
+        self.filter_param = filter_param
+
+class ConditionalFilterNode:
+    def __init__(self, condition_between: ConditionBetweenType = ConditionBetweenType.And,
+                 left_node: Union[None, 'ConditionalFilterNode', ConditionalFilterLeaf] = None,
+                 right_node: Union[None, 'ConditionalFilterNode', ConditionalFilterLeaf] = None):
+        self.condition_between: ConditionBetweenType = condition_between
+        self.left_node = left_node
+        self.right_node = right_node
+
+
+@dataclass
+class ConditionalFilterTree(Generic[TQueryEntity]):
+    def __init__(self, root_node: ConditionalFilterNode):
+        self.root = root_node
+
+
+if __name__ == '__main__':
+    empty_collection = PaginationDataCollection[int].EmptyDataCollection()
+    print(empty_collection)
