@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TypeVar, Generic, List, Optional, Union, Set, Self
+from typing import TypeVar, Generic, List, Optional, Union, Set, Self, Literal, Callable
 from datetime import date
 
 from enum import Enum
@@ -97,9 +97,78 @@ class ConditionalFilterNode:
 
 
 @dataclass
-class ConditionalFilterTree(Generic[TQueryEntity]):
+class ConditionalFilterTree(Generic[TQueryData]):
     def __init__(self, root_node: ConditionalFilterNode):
         self.root = root_node
+
+    def _serialize_to_postfix_notation(self) -> str:
+        pass
+
+    @staticmethod
+    def _deserialize_from_postfix_notation(data: str) -> Optional['ConditionalFilterTree[TQueryData]']:
+        pass
+
+    def _serialize_to_inorder(self)-> str:
+        pass
+
+    @staticmethod
+    def _deserialize_from_inorder(data: str) -> Optional['ConditionalFilterTree[TQueryData]']:
+        pass
+
+    def _serialize_to_preorder(self) -> str:
+        pass
+
+    @staticmethod
+    def _deserialize_from_preorder(data: str) -> Optional['ConditionalFilterTree[TQueryData]']:
+        pass
+
+    def _serialize_to_postorder(self) -> str:
+        pass
+
+    @staticmethod
+    def _deserialize_from_postorder(data: str) -> Optional['ConditionalFilterTree[TQueryData]']:
+        pass
+
+    def simplify(self) -> Optional['ConditionalFilterTree[TQueryData]']:
+        pass
+
+    def compress(self, alg: Literal['rpn', 'inorder', 'preorder', 'postorder']='rpn') -> bytes:
+
+        def select_serialize_func(serialized_type: Literal['rpn', 'inorder', 'preorder', 'postorder']= 'rpn') -> Callable:
+            if serialized_type == 'rpn':
+                return self._serialize_to_postfix_notation
+            elif serialized_type == 'inorder':
+                return self._serialize_to_inorder
+            elif serialized_type == 'preorder':
+                return self._serialize_to_preorder
+            elif serialized_type == 'postorder':
+                return self._serialize_to_postorder
+            return self._serialize_to_postfix_notation
+        import zlib
+        import json
+
+        serialize_fn = select_serialize_func(alg)
+        serialized_data = serialize_fn()
+        completed_data = json.dumps({"serializedType": alg, "data": serialized_data})
+        return zlib.compress(completed_data.encode('utf-8'))
+
+    @staticmethod
+    def decompress(data: bytes)-> Optional['ConditionalFilterTree[TQueryData]']:
+        import zlib
+        import json
+        unzipped_data = zlib.decompress(data)
+        decoded_data = unzipped_data.decode('utf-8')
+        package = json.loads(decoded_data)
+
+        if package["serializedType"] == 'rpn':
+            return ConditionalFilterTree._deserialize_from_postfix_notation(package['data'])
+        elif package['serializeType'] == 'inorder':
+            return ConditionalFilterTree._deserialize_from_inorder(package['data'])
+        elif package['serializeType'] == 'preorder':
+            return ConditionalFilterTree._deserialize_from_preorder(package['data'])
+        elif package['serializeType'] == 'postorder':
+            return ConditionalFilterTree._deserialize_from_postorder(package['data'])
+        raise NotImplementedError(f"Invalid input data for algorithm type. Type: {package['serializeType']} not in implemented alogrithms")
 
 
 if __name__ == '__main__':
