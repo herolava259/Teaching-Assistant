@@ -663,3 +663,4 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+/secret_configurations.json
