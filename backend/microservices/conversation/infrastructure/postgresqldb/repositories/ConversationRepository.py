@@ -6,7 +6,7 @@ from domain.aggregates.Pagination import PaginationParams, PaginationDataCollect
 from domain.entities.BaseEntity import State
 from interfaces.repositories.conversation_repository import IConversationRepository
 from utils.configuration import Configuration
-from ..mappers.conversation import ConversationMapper, conversation_mapping_fields
+from ..mappers.conversation import ConversationMapper as mapper, conversation_mapping_fields
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -14,6 +14,8 @@ from ..schema import ConversationRecord, object_to_dict
 
 from sqlalchemy import insert, exists, update
 import uuid
+from sqlalchemy.orm import Query
+from copy import deepcopy
 
 
 class ConversationRepository(IConversationRepository):
@@ -37,7 +39,7 @@ class ConversationRepository(IConversationRepository):
         with ConversationRepository.__init_session() as session:
             if not entity.id:
                 entity.id = uuid.uuid4()
-            record = ConversationMapper.entity_to_db(entity)
+            record = mapper.entity_to_db(entity)
             session.add(record)
             session.commit()
         return entity.id
@@ -64,7 +66,63 @@ class ConversationRepository(IConversationRepository):
         return False
     async def pagination_query(self, pagination_params: PaginationParams[Conversation]) -> PaginationDataCollection[
         Conversation]:
-        pass
+        from sqlalchemy import and_, or_
+        from domain.aggregates.Pagination import ConditionBetweenType, OperationType, OrderType
+        def gen_conditional_expr(field_name: str, operator: OperationType, value: Any):
+            col_term = getattr(ConversationRecord, field_name)
+            if operator == OperationType.LessThan:
+                return col_term < value
+            elif operator == OperationType.LessThanOrEqual:
+                return col_term <= value
+            elif operator == OperationType.GreaterThan:
+                return col_term > value
+            elif operator == OperationType.GreaterThanOrEqual:
+                return col_term >= value
+            elif operator == OperationType.Like:
+                return col_term.like(value)
+            elif operator == OperationType.Equal:
+                return col_term == value
+            return operator == value
+        def build_conditional_query(query: Query) -> Query:
+            conditional_params = pagination_params.filter_params
+            table_value_params = [deepcopy(filter_param) for filter_param in conditional_params]
+            for filter_param in table_value_params:
+                col_name = conversation_mapping_fields[filter_param.field_name]
+                cond_between = and_ if filter_param.condition_between == ConditionBetweenType.And else or_
+                query = query.filter(
+                    cond_between(tuple(
+                        gen_conditional_expr(col_name, filter_cond.operator, filter_cond.value)
+                        for filter_cond in filter_param.filter_conditions)))
+
+            return query
+        def build_order_by_clauses(query: Query) -> Query:
+            order_by_clauses = pagination_params.order_by_clauses
+            asc_type = order_by_clauses.order_type == OrderType.Ascending
+
+            attributes = [getattr(ConversationRecord, conversation_mapping_fields[field_name]) for field_name in order_by_clauses.order_by_fields]
+            return query.order_by(tuple(column_delegate.asc() if asc_type else column_delegate.desc() for column_delegate in attributes))
+
+        with ConversationRepository.__init_session() as session:
+            initial_query = session.query(ConversationRecord)
+            cond_query = build_conditional_query(initial_query)
+
+            total_record = cond_query.count()
+            if total_record == 0:
+                return PaginationDataCollection.EmptyDataCollection(page_size = pagination_params.page_size)
+            ordered_query = build_order_by_clauses(cond_query)
+
+            total_skip = pagination_params.page_size * (pagination_params.page_num-1)
+            total_take = pagination_params.page_size
+            pagination_query = ordered_query.offset(total_skip).limit(total_take)
+
+            records = pagination_query.all()
+            data_collection = PaginationDataCollection[Conversation].EmptyDataCollection()
+
+            data_collection.page_num = pagination_params.page_num
+            data_collection.page_size = pagination_params.page_size
+            data_collection.total_record = total_record
+            data_collection.data = [mapper.db_to_entity(record) for record in records]
+        return data_collection
     async def safety_update(self, cons: Conversation, params: List[str] | None) -> bool:
 
         exclude_fields = {'id'}
@@ -79,6 +137,7 @@ class ConversationRepository(IConversationRepository):
 
         ids = cons.id
         result = False
+        modify_value_mapping["updated_date"] = datetime.datetime.now()
         session = ConversationRepository.__init_session()
         try:
             stmt = (update(ConversationRecord)
@@ -104,7 +163,7 @@ class ConversationRepository(IConversationRepository):
         async def update_by_entity(entity: Conversation) -> bool:
             entity.updated_at = now
             with ConversationRepository.__init_session() as session:
-                json_obj = object_to_dict(ConversationMapper.entity_to_db(entity))
+                json_obj = object_to_dict(mapper.entity_to_db(entity))
                 session.query(ConversationRecord).filter_by(id=json_obj.pop('id')).update(json_obj)
                 session.commit()
             return True
@@ -142,7 +201,7 @@ class ConversationRepository(IConversationRepository):
             record: Optional[ConversationRecord] = session.query(ConversationRecord).filter(**filters).first()
             if not record:
                 return None
-            entity = ConversationMapper.db_to_entity(record)
+            entity = mapper.db_to_entity(record)
             return entity
 
     async def get_by_id(self, ids: UUID) -> Optional[Conversation]:
@@ -150,14 +209,14 @@ class ConversationRepository(IConversationRepository):
             record: Optional[ConversationRecord] = session.query(ConversationRecord).filter(ids == ConversationRecord.id).first()
             if not record:
                 return None
-            entity = ConversationMapper.db_to_entity(record)
+            entity = mapper.db_to_entity(record)
             return entity
 
     async def remove(self, obj: Union[UUID, Conversation]) -> bool:
 
         async def remove_by_entity(entity: Conversation) -> bool:
             with ConversationRepository.__init_session() as session:
-                record = ConversationMapper.entity_to_db(entity)
+                record = mapper.entity_to_db(entity)
                 session.delete(record)
                 session.commit()
             return True

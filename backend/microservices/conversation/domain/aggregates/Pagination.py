@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TypeVar, Generic, List, Optional, Union, Set
+from typing import TypeVar, Generic, List, Optional, Union, Set, Self
 from datetime import date
 
 from enum import Enum
@@ -16,6 +16,10 @@ class OperationType(int, Enum):
     Like = 100_000_006
     Equal = 100_000_007
 
+class ConditionBetweenType(int, Enum):
+    And = 100_000_001
+    Or = 100_000_002
+
 class OrderType(int, Enum):
     Ascending = 100_000_001
     Descending = 100_000_002
@@ -27,6 +31,25 @@ class FilterCondition(dataclass, Generic[TFilterValue]):
 class FilterParam(dataclass, Generic[TFilterValue]):
     field_name: str = field(default='created_date')
     filter_conditions: List[FilterCondition[TFilterValue]] = field(default_factory=list)
+    condition_between: ConditionBetweenType = field(default = ConditionBetweenType.And)
+
+class ConditionalFilterLeaf:
+    def __init__(self,filter_param: FilterParam):
+        self.filter_param = filter_param
+
+class ConditionalFilterNode:
+    def __init__(self, condition_between: ConditionBetweenType = ConditionBetweenType.And,
+                 left_node: Union[None, 'ConditionalFilterNode', ConditionalFilterLeaf] = None,
+                 right_node: Union[None, 'ConditionalFilterNode', ConditionalFilterLeaf] = None):
+        self.condition_between: ConditionBetweenType = condition_between
+        self.left_node = left_node
+        self.right_node = right_node
+
+
+
+class ConditionalFilterTree(dataclass, Generic[TQueryEntity]):
+    def __init__(self, root_node: ConditionalFilterNode):
+        self.root = root_node
 
 class OrderByClause(dataclass):
     order_type: OrderType = field(default=OrderType.Ascending)
@@ -49,13 +72,23 @@ class PaginationDataCollection(dataclass, Generic[TQueryEntity]):
 
         return page_count + 1 if self.total_record % self.page_size != 0 else page_count
 
+    @property
+    def actual_length_page(self) -> int:
+        return len(self.data)
+
+    def __len__(self):
+        return self.actual_length_page
+
+    @staticmethod
+    def EmptyDataCollection(page_size: int = 10) -> Optional['PaginationDataCollection[TQueryEntity]']:
+        return PaginationDataCollection(page_size=page_size)
+
 class PaginationParams(dataclass, Generic[TQueryEntity]):
 
     page_size: int = field(default=0)
     page_num: int = field(default=10)
     filter_params: List[FilterParam[Union[str, int, float, date]]] = field(default_factory=list)
     order_by_clauses: Optional[OrderByClause] = field(default=None)
-    distinct_by: Set[str] = field(default_factory=set)
 
     def example(self) -> TQueryEntity:
         pass

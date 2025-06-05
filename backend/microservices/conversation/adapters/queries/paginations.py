@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, Set
 from typing import List, Optional, Union
 from datetime import date
-from domain.aggregates.Pagination import OperationType, OrderType
+from domain.aggregates.Pagination import OperationType, OrderType, ConditionBetweenType
 
 
 class FilterConditionModel(BaseModel):
@@ -11,6 +11,7 @@ class FilterConditionModel(BaseModel):
 class FilterParamModel(BaseModel):
     field_name: str = Field(default='created_date')
     filter_conditions: List[FilterConditionModel] = Field(default_factory=list)
+    condition_between: ConditionBetweenType = Field(default=ConditionBetweenType.And)
 
 class OrderByClauseModel(BaseModel):
     order_type: OrderType = Field(default=OrderType.Ascending)
@@ -21,7 +22,6 @@ class PaginationParamsModel(BaseModel):
     page_size: int = Field(default=10, lt=100, gt=10)
     page_num: int = Field(default=0, ge=0)
     order_by_clause: Optional[OrderByClauseModel] = Field(default=None)
-    distinct_by: List[str] = Field(default_factory=list)
 
 
 class ConversationPaginationQuery(PaginationParamsModel):
