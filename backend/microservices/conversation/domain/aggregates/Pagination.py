@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import TypeVar, Generic, List, Optional, Union, Set, Self, Literal, Callable
+from typing import TypeVar, Generic, List, Optional, Union, Set, Literal, Callable
 from datetime import date
 
 from enum import Enum

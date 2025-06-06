@@ -29,7 +29,10 @@ class ConversationGetByIdQueryHandler(AbstractConversationHandler[ConversationGe
 
 class ConversationPaginationQueryHandler(AbstractConversationHandler[ConversationPaginationQuery,ConversationPaginationResponse]):
     async def handle(self, request: ConversationPaginationQuery) -> ConversationPaginationResponse:
-        return await self.repo
+        params = ConversationMapper.pagination_out_to_in(request)
+        data_collection = await self.repo.pagination_query(params)
+
+        return ConversationMapper.pagination_in_to_out(data_collection)
 
     def __init__(self, repo: IConversationRepository):
         self.repo = repo

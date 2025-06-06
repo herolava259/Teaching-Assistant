@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from enum import IntEnum
+from enum import Enum
 
-class ERating(IntEnum):
+class ERating(int, Enum):
     One = 1
     Two = 2
     Three = 3
