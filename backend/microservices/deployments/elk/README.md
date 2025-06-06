@@ -67,3 +67,94 @@ and stop the cluster of containers
 ```bash
 docker-compose down
 ```
+
+## 3. **Additional step: Setup elastic search with tls/ssl certificates (so tired |~_~|, feel painful+stressful)**
+
+- project sturture 
+
+```arduino
+elasticsearch-docker/
+├── docker-compose-elk.yml
+├── config/
+│   └── elasticsearch.yml
+└── certs/
+```
+- Step 1: Generate TLS certificates
+    * Create directory
+    * begin at: ./deployments/elk
+```bash
+mkdir certs && cd certs 
+```
+----------
+> Run the elasticsearch-certutil in a temporary container:
+---------
+```bash
+docker run --rm -v $PWD:/certs \
+  docker.elastic.co/elasticsearch/elasticsearch:8.13.0 \
+  bin/elasticsearch-certutil ca --pem -out /certs/elastic-stack-ca.zip
+
+```
+------
+> **Unzip generated CA:**
+
+```bash
+unzip elastic-stack-ca.zip
+```
+---
+>generate certificates for ssl/tls 
+``` bash
+docker run --rm -v $PWD:/certs \
+  docker.elastic.co/elasticsearch/elasticsearch:8.13.0 \
+  bin/elasticsearch-certutil cert --name es-node --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key --pem -out /certs/elastic-certificates.zip
+```
+---
+>Unzip generated certificates
+```bash
+unzip elastic-certificates.zip
+```
+
+- Step 2: Elasticsearch Configuration
+
+> Create **config/elasticsearch.yml**:
+
+```yaml
+cluster.name: "docker-secure-cluster"
+network.host: 0.0.0.0
+xpack.security.enabled: true
+xpack.security.http.ssl:
+  enabled: true
+  key: /usr/share/elasticsearch/config/certs/es-node/es-node.key
+  certificate: /usr/share/elasticsearch/config/certs/es-node/es-node.crt
+  certificate_authorities: [ "/usr/share/elasticsearch/config/certs/ca/ca.crt" ]
+xpack.security.transport.ssl:
+  enabled: true
+  verification_mode: certificate
+  key: /usr/share/elasticsearch/config/certs/es-node/es-node.key
+  certificate: /usr/share/elasticsearch/config/certs/es-node/es-node.crt
+  certificate_authorities: [ "/usr/share/elasticsearch/config/certs/ca/ca.crt" ]
+```
+
+- Step 3: Some modification on docker-compose-elk.yml to docker-compose-elk-secure.tml 
+
+```bash
+environments:
+    ...
+    - cluster.name=secure-cluster
+    - xpack.security.http.ssl.enabled=true
+    - xpack.security.transport.ssl.enabled=true
+    - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/certs/es-node/es-node.p12
+    - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/certs/es-node/es-node.p12
+    ...
+```
+
+```bash
+...
+healthcheck: test: curl --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt -u elastic:changeme https://localhost:9200 || exit 1
+...
+```
+
+```bash
+volumes
+    - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    - ./certs:/usr/share/elasticsearch/config/certs:ro
+```

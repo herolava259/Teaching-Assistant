@@ -1,23 +1,32 @@
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    container_name: elasticsearch
+    container_name: es-secure
     restart: always 
     environment:
-      - xpack.security.enabled=false
-      - "discovery.type=single-node"
+      - node.name=es-node
+      - cluster.name=secure-cluster
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/certs/es-node/es-node.p12
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/certs/es-node/es-node.p12
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ES_JAVA_OPTS=-Xms256m -Xmx256m ## setting small memory for jvm (save memeory, weakness ram :(( huhu)
     networks:
       - es-net 
     ports:
-      - 9200:9200
+      - "9200:9200"
+      - "9300:9300"
     volumes:
     - es_data:/usr/share/elasticsearch/data
+    - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    - ./certs:/usr/share/elasticsearch/config/certs:ro
     env_file:
       - .env
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      test: curl --cacert /usr/share/elasticsearch/config/certs/ca/ca.crt -u elastic:changeme https://localhost:9200 || exit 1
       interval: 30s
       timeout: 10s
       retries: 5
