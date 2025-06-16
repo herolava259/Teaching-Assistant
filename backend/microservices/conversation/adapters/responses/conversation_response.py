@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 from datetime import date
 from enum import IntEnum
-from typing import Optional, List
+from typing import Optional, List, TypeVar, Generic
 from domain.aggregates.Conversation import Conversation
 
 class ResponseStatus(IntEnum):
@@ -17,7 +17,7 @@ class ResponseMode(IntEnum):
     Development = 2
 
 class ConversationBaseResponse(BaseModel):
-    entity_id: Optional[UUID] = Field(description="id correspond with conversation entity", default=None)
+    entity_id: Optional[UUID] = Field(description="id correspond with a entity", default=None)
     response_created_time: date = Field(default_factory=datetime.datetime.now)
     status: ResponseStatus = Field(default=ResponseStatus.Success)
     description: Optional[str] = Field(default='')
@@ -58,6 +58,10 @@ class ConversationSignalResponse(ConversationBaseResponse):
                                           signal=True,
                                           mode = mode)
 
+TValue = TypeVar("TValue")
+
+class ConversationSingularResponse(ConversationBaseResponse, Generic[TValue]):
+    content: TValue = Field(...)
 
 class ConversationPaginationResponse(ConversationBaseResponse):
     current_page: int = Field(...)
@@ -67,3 +71,6 @@ class ConversationPaginationResponse(ConversationBaseResponse):
     data: List[Conversation] = Field(default_factory=list)
 
 
+# if __name__ == '__main__':
+#     singular_response = ConversationSingularResponse[int](content = 3)
+#     print(singular_response)

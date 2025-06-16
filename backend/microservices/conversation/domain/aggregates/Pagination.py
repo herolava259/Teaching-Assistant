@@ -100,7 +100,7 @@ class ConditionalFilterNode:
 class ConditionalFilterTree(Generic[TQueryData]):
     def __init__(self, root_node: ConditionalFilterNode):
         self.root = root_node
-
+    #TODO: Implement the function in phase II
     def _serialize_to_postfix_notation(self) -> str:
         pass
 
@@ -168,7 +168,7 @@ class ConditionalFilterTree(Generic[TQueryData]):
             return ConditionalFilterTree._deserialize_from_preorder(package['data'])
         elif package['serializeType'] == 'postorder':
             return ConditionalFilterTree._deserialize_from_postorder(package['data'])
-        raise NotImplementedError(f"Invalid input data for algorithm type. Type: {package['serializeType']} not in implemented alogrithms")
+        raise NotImplementedError(f"Invalid input data for algorithm type. Type: {package['serializeType']} not in implemented algorithms")
 
 
 if __name__ == '__main__':

@@ -3,6 +3,7 @@ from domain.aggregates.Pagination import PaginationParams, FilterParam, FilterCo
 from ..responses.conversation_response import *
 from ..responses.conversation_response import ConversationPaginationResponse
 from domain.aggregates.Pagination import PaginationDataCollection
+from adapters.commands.conversation_commands import ConversationCreateCommand
 import datetime
 class ConversationMapper:
     @staticmethod
@@ -69,6 +70,12 @@ class ConversationMapper:
                                               total_record= pagination_data.total_record,
                                               page_size= pagination_data.page_size,
                                               data= pagination_data.data)
+
+    @staticmethod
+    def create_cmd_to_entity(create_cmd: ConversationCreateCommand) -> Conversation:
+        return Conversation(title = create_cmd.title,
+                            limit_invitation=create_cmd.limit_invitation,
+                            created_user_id=create_cmd.created_user_id)
 
 
 

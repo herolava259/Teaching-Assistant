@@ -1,5 +1,7 @@
 from fastapi import APIRouter, status
 from uuid import UUID
+from adapters.queries.conversation import ConversationPaginationQuery
+from adapters.commands.conversation_commands import ConversationCreateCommand
 
 router = APIRouter(
     prefix="/conversation/conversation_spec/",
@@ -28,13 +30,13 @@ async def get_conversation_by_id(conversation_id: UUID):
 @router.post(path="conversation_pagination_query/{conversation_id}",
              status_code=status.HTTP_302_FOUND,
              response_model=ConversationPaginationResponse)
-async def pagination_query():
-    pass
+async def pagination_query(page_query: ConversationPaginationQuery):
+    return await conversation_mediator.send(page_query)
 
 
 @router.post("conversation_create/")
-async def create_conversation():
-    pass
+async def create_conversation(create_command: ConversationCreateCommand):
+    return await conversation_mediator.send(create_command)
 
 
 

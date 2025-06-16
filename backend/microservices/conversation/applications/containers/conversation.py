@@ -94,16 +94,36 @@ class ConversationServiceRegistry:
 
         return container
 
-from enum import IntEnum
+from enum import Enum
+from abc import ABC, abstractmethod
 
-class ImplementationType(IntEnum):
+class LifecycleType(int, Enum):
     Singleton = 1
     Scope = 2
     Transition = 3
 
-TService = TypeVar('TService')
-class ServiceFactory(Generic[TService]):
+class ServiceTypeMetadata:
+    def __init__(self, service_type: type, impl_type: LifecycleType = LifecycleType.Transition, thread_safe: bool| None = None):
+        self.service_type: type = service_type
+        self.lifecycle_type: LifecycleType = impl_type
+        self.thread_safe: bool = False if not thread_safe else True
+
+class InstanceKeeper:
     pass
+
+TService = TypeVar('TService')
+
+
+class ServiceResourceManager:
+    pass
+
+
+class ServiceFactory(Generic[TService], ABC):
+
+    @abstractmethod
+    def implement_service(self):
+        pass
+
 class SingletonServiceFactory(ServiceFactory):
     pass
 class ScopedServiceFactory(ServiceFactory):

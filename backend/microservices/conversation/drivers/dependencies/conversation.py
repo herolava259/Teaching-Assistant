@@ -1,7 +1,7 @@
 from applications.containers.conversation import ConversationServiceContainer, ConversationServiceRegistry
 from applications.handlers.conversation import *
 from applications.mediators.conversation import ConversationMediator
-from applications.registries.conversation import ConversationOperationRegistry
+from applications.registries.conversation import ConversationHandlerRegistry
 from interfaces.repositories.conversation_repository import IConversationRepository
 from infrastructure.postgresqldb.repositories.ConversationRepository import ConversationRepository
 
@@ -11,8 +11,8 @@ def register_service() -> ConversationServiceRegistry:
     return registry.register_service(ConversationRepository, IConversationRepository)
 
 
-def register_handler(service_container: ConversationServiceContainer) -> ConversationOperationRegistry:
-    handler_registry = ConversationOperationRegistry(service_container)
+def register_handler(service_container: ConversationServiceContainer) -> ConversationHandlerRegistry:
+    handler_registry = ConversationHandlerRegistry(service_container)
     handler_registry.register(ConversationGetByIdQueryHandler)
     return handler_registry
 

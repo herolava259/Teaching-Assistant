@@ -17,3 +17,6 @@ pymongoarrow==1.7.2
 mongoengine==0.29.1
 redis==6.1.0
 alembic==1.15.2
+python-multipart==0.0.20
+fastapi-jwt-auth==0.5.0
+pyjwt[crypto] >= 2.10.1
