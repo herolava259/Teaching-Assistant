@@ -1,0 +1,186 @@
+{
+  "json_log_template": {
+    "@timestamp": "{timestamp}",
+    "ecs": {
+      "version": "{ecs_version}"
+    },
+    "error": {
+      "stack_trace": "{exc_fields}"
+    },
+    "event": {
+      "created": "{created_time}",
+      "module": "{module_record}"
+    },
+    "log": {
+      "level": "{level_name}",
+      "logger": "{logger_name}",
+      "origin": {
+        "file": {
+          "line": "{lineno}",
+          "name": "{filename}",
+          "fullpath": "{fullpath}"
+        },
+        "function": "{func_name}"
+      }
+    },
+    "message": "{message}",
+    "process": {
+      "pid": "{p_id}",
+      "name": "{p_name}",
+      "thread": {
+        "id": "{t_id}",
+        "name":"{t_name}"
+      }
+    }
+  },
+  "instruction": {
+    "arguments": ["timestamp",
+                  "ecs_version",
+                  "exc_fields",
+                  "created_time",
+                  "module_record",
+                  "level_name",
+                  "logger_name",
+                  "lineno",
+                  "filename",
+                  "func_name",
+                  "message",
+                  "p_id",
+                  "p_name",
+                  "t_id",
+                  "t_name",
+                  "fullpath"
+    ],
+    "details":
+    {
+      "timestamp":{
+          "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+          "path": "@timestamp",
+          "type": "datetime",
+          "default": "2024-03-12'T'17:56:22'-0700'",
+          "description": null,
+          "limit": 64
+      },
+      "ecs_version": {
+          "format": "x.y.z",
+          "path": "ecs:version",
+          "type": "str",
+          "default": "9.0.0",
+          "limit": 8,
+          "description": null
+      },
+      "exc_fields": {
+        "format": null,
+        "path": "error:stack_trace",
+        "type": "str",
+        "default": "",
+        "limit": 2048,
+        "description": null
+      },
+      "created_time": {
+        "format": "yyyy-MM-dd HH:mm:ss.SSSZZZZ",
+        "path": "event:created",
+        "type": "datetime",
+        "default": "2024-03-10 14:30:12,655+0000" ,
+        "limit": 64,
+        "description": null
+      },
+      "module_record": {
+        "format": null,
+        "path": "event:module",
+        "type": "str",
+        "default": "conversation",
+        "limit": 128,
+        "description": null
+      },
+      "level_name": {
+        "format": "NOTSET|DEBUG|INFO|WARNING|ERROR|CRITICAL",
+        "path": "log:level",
+        "type": "enum-string",
+        "default": "DEBUG",
+        "limit": 32,
+        "description": null
+      },
+      "logger_name": {
+        "format": null,
+        "path": "log:logger",
+        "type": "str",
+        "default": "main",
+        "limit": 64,
+        "description": null
+      },
+      "lineno": {
+        "format": null,
+        "path": "log:origin:file:line",
+        "type": "number",
+        "default": 1,
+        "limit": null,
+        "description": null
+      },
+      "filename": {
+        "format": null,
+        "path": "log:origin:file:name",
+        "type": "str",
+        "default": "data.log",
+        "limit": "256",
+        "description": null
+      },
+      "func_name": {
+        "format": null,
+        "path": "log:function",
+        "type": "str",
+        "default": "main",
+        "limit": 128,
+        "description": null
+      },
+      "message": {
+        "format": null,
+        "path": "message",
+        "type": "str",
+        "default": "",
+        "limit": 147456,
+        "description": null
+      },
+      "p_id": {
+        "format": null,
+        "path": "process:pid",
+        "type": "str",
+        "default": "",
+        "limit": 32,
+        "description": null
+      },
+      "p_name": {
+        "format": null,
+        "path": "process:name",
+        "type": "str",
+        "default": "",
+        "limit": 128,
+        "description": null
+      },
+      "t_id": {
+        "format": null,
+        "path": "process:thread:id",
+        "type": "str",
+        "default": "",
+        "limit": 128,
+        "description": null
+      },
+      "t_name": {
+        "format": null,
+        "path": "process:thread:name",
+        "type": "str",
+        "default": "",
+        "limit": 256,
+        "description": null
+      },
+      "fullpath": {
+        "format": "(s+/)+",
+        "path": "log/origin/file/fullpath",
+        "type": "str",
+        "default": "",
+        "limit": 256,
+        "description": null
+      }
+    }
+  }
+}

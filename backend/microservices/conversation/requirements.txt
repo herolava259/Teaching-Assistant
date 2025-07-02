@@ -20,3 +20,7 @@ alembic==1.15.2
 python-multipart==0.0.20
 fastapi-jwt-auth==0.5.0
 pyjwt[crypto] >= 2.10.1
+elasticsearch == 9.0.2
+logging == 0.4.9.6
+coloredlogs==15.0.1
+python-elastic-logstash==2.0.0

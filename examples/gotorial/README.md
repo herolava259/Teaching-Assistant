@@ -25,7 +25,35 @@
 - Does not support inheritance (KISS)
 
 ## Chapter II. Installation and setup environment for programming 
+### 1. Go Install 
+- Reference Link [Go: Download and Install](https://go.dev/doc/install)
+- Install Utility in IDE: 
+    * Using Visual Studio Code 
+    * Install extension **Go** to the ide support to syntax 
+    * press **Ctrl + Shift + X** to open to Extension
+    * Pressinf **Ctrl + Shift + P** to open the command 
+    * Run Go: Install/Update Tools command 
+    * Select all provided tools and Click OK
+### 2. Go Quickstart (simple)
+- Launch the VS Code editor 
+- Open up a terminal window and type: 
+```bash
+go mod init example.com/hello
+```
+- Create a new file: helloworld.go
+- Type a following code:
+```go
+package main
+import ("fmt")
 
+func main() {
+  fmt.Println("Hello World!")
+}
+```
+- Type on terminal: 
+```bash
+go run .\helloworld.go
+```
 
 ## Chapter III. Go syntax 
 

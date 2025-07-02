@@ -124,9 +124,9 @@ class ServiceFactory(Generic[TService], ABC):
     def implement_service(self):
         pass
 
-class SingletonServiceFactory(ServiceFactory):
+class SingletonServiceFactory(ServiceFactory, ABC):
     pass
-class ScopedServiceFactory(ServiceFactory):
+class ScopedServiceFactory(ServiceFactory, ABC):
     pass
-class TransitionServiceFactory(ServiceFactory):
+class TransitionServiceFactory(ServiceFactory, ABC):
     pass
