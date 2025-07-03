@@ -260,6 +260,8 @@ DEBUG - Just checking in!
 - [Basic-Logging-Python](https://realpython.com/python-logging/)
 - [Logging-Python-doc](https://docs.python.org/3/library/logging.html)
 - [logging-with-logstash](https://pypi.org/project/python-elastic-logstash/)
+- [Logging-Cookbook](https://docs.python.org/3/howto/logging-cookbook.html)
+- [Regular-Expression](https://quantrimang.com/hoc/regex-trong-python-165471)
 
 
 

@@ -9,27 +9,27 @@
     },
     "event": {
       "created": "{created_time}",
-      "module": "{module_record}"
+      "module": "{module}"
     },
     "log": {
-      "level": "{level_name}",
-      "logger": "{logger_name}",
+      "level": "{levelname}",
+      "logger": "{name}",
       "origin": {
         "file": {
           "line": "{lineno}",
           "name": "{filename}",
-          "fullpath": "{fullpath}"
+          "fullpath": "{pathName}"
         },
-        "function": "{func_name}"
+        "function": "{funcName}"
       }
     },
     "message": "{message}",
     "process": {
-      "pid": "{p_id}",
-      "name": "{p_name}",
+      "pid": "{process}",
+      "name": "{processName}",
       "thread": {
-        "id": "{t_id}",
-        "name":"{t_name}"
+        "id": "{thread}",
+        "name":"{threadName}"
       }
     }
   },
@@ -38,23 +38,23 @@
                   "ecs_version",
                   "exc_fields",
                   "created_time",
-                  "module_record",
-                  "level_name",
-                  "logger_name",
+                  "module",
+                  "levelname",
+                  "name",
                   "lineno",
                   "filename",
-                  "func_name",
+                  "funcName",
                   "message",
-                  "p_id",
-                  "p_name",
-                  "t_id",
-                  "t_name",
-                  "fullpath"
-    ],
+                  "process",
+                  "processName",
+                  "thread",
+                  "threadName",
+                  "pathName"],
     "details":
     {
       "timestamp":{
-          "format": "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+          "format": "%Y-%m-%dT%H:%M:%S.%fZ",
+          "format_type": 2,
           "path": "@timestamp",
           "type": "datetime",
           "default": "2024-03-12'T'17:56:22'-0700'",
@@ -62,7 +62,8 @@
           "limit": 64
       },
       "ecs_version": {
-          "format": "x.y.z",
+          "format": "^\\d.\\d.\\d$",
+          "format_type": 1,
           "path": "ecs:version",
           "type": "str",
           "default": "9.0.0",
@@ -71,6 +72,7 @@
       },
       "exc_fields": {
         "format": null,
+        "format_type": 1,
         "path": "error:stack_trace",
         "type": "str",
         "default": "",
@@ -78,7 +80,8 @@
         "description": null
       },
       "created_time": {
-        "format": "yyyy-MM-dd HH:mm:ss.SSSZZZZ",
+        "format": "%Y-%m-%d %H:%M:%S.%f%z",
+        "format_type": 2,
         "path": "event:created",
         "type": "datetime",
         "default": "2024-03-10 14:30:12,655+0000" ,
@@ -87,22 +90,25 @@
       },
       "module_record": {
         "format": null,
+        "format_type": 1,
         "path": "event:module",
         "type": "str",
         "default": "conversation",
         "limit": 128,
         "description": null
       },
-      "level_name": {
-        "format": "NOTSET|DEBUG|INFO|WARNING|ERROR|CRITICAL",
+      "levelname": {
+        "format": "^(NOTSET|DEBUG|INFO|WARNING|ERROR|CRITICAL)$",
+        "format_type": 1,
         "path": "log:level",
         "type": "enum-string",
         "default": "DEBUG",
         "limit": 32,
         "description": null
       },
-      "logger_name": {
-        "format": null,
+      "name": {
+        "format": "^[a-zA-Z]{2,64}$",
+        "format_type": 1,
         "path": "log:logger",
         "type": "str",
         "default": "main",
@@ -110,23 +116,26 @@
         "description": null
       },
       "lineno": {
-        "format": null,
+        "format": "^[0-9]$",
         "path": "log:origin:file:line",
         "type": "number",
+        "format_type": 3,
         "default": 1,
-        "limit": null,
+        "limit": 10000,
         "description": null
       },
       "filename": {
-        "format": null,
+        "format": "^[\\w,\\s-]+\\.[A-Za-z]{3}$",
+        "format_type": 1,
         "path": "log:origin:file:name",
         "type": "str",
         "default": "data.log",
         "limit": "256",
         "description": null
       },
-      "func_name": {
-        "format": null,
+      "funcName": {
+        "format": "^(([a-zA-Z]([\\w]{1,32})_)*)[a-zA-Z]([\\w]{1,32})$",
+        "format_type": 1,
         "path": "log:function",
         "type": "str",
         "default": "main",
@@ -134,48 +143,54 @@
         "description": null
       },
       "message": {
-        "format": null,
+        "format": "^\\w*$",
+        "format_type": 1,
         "path": "message",
         "type": "str",
         "default": "",
         "limit": 147456,
         "description": null
       },
-      "p_id": {
+      "process": {
         "format": null,
+        "format_type": 1,
         "path": "process:pid",
         "type": "str",
         "default": "",
         "limit": 32,
         "description": null
       },
-      "p_name": {
-        "format": null,
+      "processName": {
+        "format": "^[a-zA-Z]{2-128}$",
+        "format_type": 1,
         "path": "process:name",
         "type": "str",
         "default": "",
         "limit": 128,
         "description": null
       },
-      "t_id": {
+      "thread": {
         "format": null,
+        "format_type": 1,
         "path": "process:thread:id",
         "type": "str",
         "default": "",
         "limit": 128,
         "description": null
       },
-      "t_name": {
-        "format": null,
+      "threadName": {
+        "format": "^[a-zA-Z]{2-128}$",
+        "format_type": 1,
         "path": "process:thread:name",
         "type": "str",
         "default": "",
         "limit": 256,
         "description": null
       },
-      "fullpath": {
-        "format": "(s+/)+",
-        "path": "log/origin/file/fullpath",
+      "pathName": {
+        "format": "^(?<ParentPath>(?:[a-zA-Z]\\:|\\\\\\\\[\\w\\s\\.]+\\\\[\\w\\s\\.$]+)\\\\(?:[\\w\\s\\.]+\\\\)*)(?<BaseName>[\\w\\s\\.]*?)$",
+        "path": "log:origin:file:fullpath",
+        "format_type": 1,
         "type": "str",
         "default": "",
         "limit": 256,
