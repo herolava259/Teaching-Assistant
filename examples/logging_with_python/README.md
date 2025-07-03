@@ -262,7 +262,7 @@ DEBUG - Just checking in!
 - [logging-with-logstash](https://pypi.org/project/python-elastic-logstash/)
 - [Logging-Cookbook](https://docs.python.org/3/howto/logging-cookbook.html)
 - [Regular-Expression](https://quantrimang.com/hoc/regex-trong-python-165471)
-
+- [logging-structure](https://github.com/erok77/esdemo/blob/master/py/esdemo/formatters.py)
 
 
 

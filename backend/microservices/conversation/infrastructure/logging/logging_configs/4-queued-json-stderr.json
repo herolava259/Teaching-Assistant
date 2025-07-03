@@ -3,7 +3,7 @@
   "disable_existing_loggers": false,
   "formatters": {
     "json": {
-      "()": "mylogger.MyJSONFormatter",
+      "()": "formatters.JsonFormatter.NormalJSONFormatter",
       "fmt_keys": {
         "level": "levelname",
         "message": "message",
