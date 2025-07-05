@@ -1,4 +1,4 @@
-
+# Setting up ELK triage
 
 ## Install Elastich search - Logtash(later) - Kibana 
 
@@ -158,3 +158,5 @@ volumes
     - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     - ./certs:/usr/share/elasticsearch/config/certs:ro
 ```
+
+## How to setup logtash docker 

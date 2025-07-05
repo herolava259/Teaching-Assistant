@@ -70,7 +70,7 @@ class Configuration(dict):
         self.__dict__[key] = obj
 
     @staticmethod
-    def load(path: str) -> int|str|dict:
+    def load(path: str) -> int|float|str|dict:
 
         var_names: List[str] = path.split(':')
 

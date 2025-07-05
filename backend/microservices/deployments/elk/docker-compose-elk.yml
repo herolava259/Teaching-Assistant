@@ -31,17 +31,38 @@ services:
     networks:
       - es-net
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     ports:
       - 5601:5601
     env_file:
       - .env
-
+  
+  logstash:
+    container_name: logtash
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+    env_file:
+      - .env
+    environment:
+      - ES_INDEX=${ES_INDEX}
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    links:
+      - elasticsearch
+    networks:
+      - es-net
+    volumes:
+      - ./logstash/logstash.yml:usr/share/logstash/config/logstash.yml
+      - ./logstash/logstash.conf:usr/share/logstash/pipeline/logstash.conf
+    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
 networks:
   es-net:
     driver: bridge
 
 volumes:
   es_data:
-
+    driver: local
+    driver_opts:
+      type: none
+      device: /var/lib/elasticsearch
+      o: bind
 

@@ -26,5 +26,16 @@
     {
       "default": ""
     }
+  },
+  "logstash":
+  {
+    "connections":
+    {
+      "default":
+      {
+        "host": "",
+        "port": 5000
+      }
+    }
   }
 }
