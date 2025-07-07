@@ -1,0 +1,43 @@
+{
+  "simple":
+  {
+    "port": 5000,
+    "format": "%(levelname)s - %(asctime)s - %(name)s - %(logger)s - %(thread)s - %(message)s",
+    "style": "%"
+  },
+  "complete":{
+    "ports": [5000],
+    "format": "@<START>@ - <LEVEL>[%(levelname)s : %(levelno)s] - <SERVICE>[%(service_name)s : %(service_no)s] - <PROCESS>[%(processName)s : %(process)d] - <THREAD>[%(threadName)s : %(thread)s] - %(taskName)s - <PHYSICAL_LOC>[%(path)s : %(module)s : %(lineno)d : %(functionName)s]  - <TIME>[%(asctime)s : %(timestamp)s : %(created)f : %(relativeCreated)d : %(msecs)f] - <MSG>%(message)s</MSG> - %(additional_fields)s - <END>",
+    "style": "%",
+    "ecs_version": "9.0.0",
+    "optional_fields": {
+      "fields": ["exc_fields", "stack_fields"],
+      "format": "<ADDITIONAL>[%(exc_fields)s : %(stack_fields)s]"
+    },
+    "tags": ["START", "END", "LEVEL", "SERVICE", "PROCESS", "THREAD", "PHYSICAL_LOC", "TIME", "ADDITIONAL", "MSG"],
+    "datefmt": "%Y-%m-%d %H-%M-%S.%f%Z",
+    "arguments": [
+      "levelname",
+      "levelno",
+      "service_name",
+      "service_no",
+      "processName",
+      "process",
+      "threadName",
+      "thread",
+      "taskName",
+      "path",
+      "module",
+      "lineno",
+      "functionName",
+      "lineno",
+      "asctime",
+      "timestamp",
+      "created",
+      "relativeCreated",
+      "msecs",
+      "message",
+      "additional"
+    ]
+  }
+}

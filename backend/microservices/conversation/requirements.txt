@@ -23,5 +23,6 @@ pyjwt[crypto] >= 2.10.1
 elasticsearch == 9.0.2
 logging == 0.4.9.6
 coloredlogs==15.0.1
+colorama==0.4.6
 python-elastic-logstash==2.0.0
 pyyaml==6.0.2

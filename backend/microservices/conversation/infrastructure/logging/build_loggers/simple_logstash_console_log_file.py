@@ -30,7 +30,7 @@ def simple_setup_logstash_console_log_file(logger: str | Logger,
     formatter = logging.Formatter(
         "{asctime} - {levelname} - {thread} - {message}",
         style="{",
-        datefmt="%Y-%m-%dT%H:%M:%S.%fZ",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
     console_handler.setFormatter(formatter)
@@ -54,10 +54,18 @@ def build_simple_logstash_listener(num_worker: int = 1) -> Tuple[Queue, QueueLis
     try:
         addr = Configuration.load("logstash:connections:default")
         workers = [SocketHandler(host=addr['host'], port=addr['port']) for _ in range(num_worker)]
-        listener = QueueListener(queue, workers)
+        formatter = logging.Formatter(
+            "{asctime} - {levelname} - {thread} - {message}",
+            style="{",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+        for worker in workers:
+            worker.setFormatter(formatter)
+
+        listener = QueueListener(queue, *workers)
     except Exception as ex:
         logging.exception(ex)
-        listener = QueueListener(queue, [logging.StreamHandler()])
+        listener = QueueListener(queue, logging.StreamHandler())
 
     return queue, listener
 
@@ -69,7 +77,7 @@ if __name__ == "__main__":
     simp_logger = simple_setup_logstash_console_log_file(__name__, async_logstash_queue)
     queue_logstash_listener.start()
 
-    simp_logger.debug("This is simple log")
+    simp_logger.info("This is a simple log")
 
     queue_logstash_listener.stop()
 

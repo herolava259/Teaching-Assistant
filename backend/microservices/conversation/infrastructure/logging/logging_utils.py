@@ -43,6 +43,36 @@ class LoggingUtils:
         return json_obj
 
 
+def load_template_config(file_name:str) -> dict:
+    file_path = log_template_path / file_name
+
+    with file_path.open("r+", encoding="utf-8") as file:
+        template_obj = json.load(file)
+    return template_obj
+
+
+class LoggingTemplateConfig:
+    def __init__(self):
+        self.console_temp_obj = load_template_config("console_log_template.json")
+        self.es_temp_obj = load_template_config("es_json_log_template.json")
+        self.logstash_temp_obj = load_template_config("logstash_log_template.json")
+
+    @property
+    def console(self):
+        return self.console_temp_obj
+
+    @property
+    def elastic_search(self):
+        return self.es_temp_obj
+
+    @property
+    def logstash(self):
+        return self.logstash_temp_obj
+
+
+
+
+
 
 
 

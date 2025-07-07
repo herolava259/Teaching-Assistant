@@ -1,5 +1,11 @@
 import json
 from typing import List
+from pathlib import Path
+
+config_url_file_path = Path(__file__).parent.parent / "configs/configurations.json"
+config_obj = None
+with config_url_file_path.open("r+", encoding="utf-8") as f:
+    config_obj = json.load(f)
 
 
 class Configuration(dict):
@@ -74,14 +80,17 @@ class Configuration(dict):
 
         var_names: List[str] = path.split(':')
 
-        config_object: dict | None = None
+        result_obj = config_obj
 
-        with open('../configs/configurations.json') as file:
-            config_object = json.load(file)
-
-        result_obj = config_object
 
         for key in var_names:
+            if not key:
+                return result_obj
+            if key not in result_obj:
+                raise RuntimeError("Cannot path file")
             result_obj = result_obj[key]
 
         return result_obj
+
+if __name__ == "__main__":
+    print(Configuration.load(""))
