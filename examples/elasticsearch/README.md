@@ -284,5 +284,6 @@ DELETE course_v001
 - [es-how-to-work](https://viblo.asia/p/elasticsearch-zero-to-hero-2-co-che-hoat-dong-cua-elasticsearch-38X4ENMXJN2)
 - [inverted-index-indexing-document-engineering](https://viblo.asia/p/tim-hieu-ve-inverted-index-trong-elasticsearch-3Q75wGpJ5Wb)
 - [Elastic-Search-API](https://www.youtube.com/watch?v=L5q2xNIQQrc&t=96s)
-
+- [elastic-and-agent](https://www.elastic.co/docs/reference/fleet/)
+- [elasticsearch-python](https://www.elastic.co/docs/reference/elasticsearch/clients/python/getting-started)
 

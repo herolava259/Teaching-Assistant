@@ -21,6 +21,7 @@ python-multipart==0.0.20
 fastapi-jwt-auth==0.5.0
 pyjwt[crypto] >= 2.10.1
 elasticsearch == 9.0.2
+elasticsearch[async]
 logging == 0.4.9.6
 coloredlogs==15.0.1
 colorama==0.4.6
