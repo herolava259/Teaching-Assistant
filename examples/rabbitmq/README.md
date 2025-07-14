@@ -42,3 +42,4 @@
 - [routing-python](https://www.rabbitmq.com/tutorials/tutorial-four-python)
 - [topis-python](https://www.rabbitmq.com/tutorials/tutorial-five-python)
 - [rpc-python](https://www.rabbitmq.com/tutorials/tutorial-six-python)
+- [github-docs](https://github.com/rabbitmq/rabbitmq-server/tree/main/deps)
